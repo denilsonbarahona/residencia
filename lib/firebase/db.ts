@@ -23,10 +23,6 @@ import type {
   AccessLog,
 } from "@/lib/types";
 
-if (!db) {
-  throw new Error("Firestore not initialized");
-}
-
 // User operations
 export const createUser = async (
   userId: string,
@@ -57,6 +53,7 @@ export const getUser = async (userId: string): Promise<User | null> => {
 };
 
 export const getUserByEmail = async (email: string): Promise<User | null> => {
+  if (!db) return null;
   const q = query(
     collection(db, "users"),
     where("email", "==", email),
@@ -76,6 +73,7 @@ export const getUserByEmail = async (email: string): Promise<User | null> => {
 };
 
 export const updateUser = async (userId: string, updates: Partial<User>) => {
+  if (!db) return;
   const userRef = doc(db, "users", userId);
   await updateDoc(userRef, updates);
 };
@@ -85,6 +83,7 @@ export const createResidential = async (
   residentialId: string,
   residentialData: Omit<Residential, "id" | "createdAt">
 ) => {
+  if (!db) return;
   const residentialRef = doc(db, "residentials", residentialId);
   await setDoc(residentialRef, {
     ...residentialData,
@@ -96,6 +95,7 @@ export const createResidential = async (
 export const getResidential = async (
   residentialId: string
 ): Promise<Residential | null> => {
+  if (!db) return null;
   const residentialRef = doc(db, "residentials", residentialId);
   const residentialSnap = await getDoc(residentialRef);
   if (residentialSnap.exists()) {
@@ -113,6 +113,7 @@ export const getResidential = async (
 export const createInvitation = async (
   invitationData: Omit<Invitation, "id" | "createdAt">
 ) => {
+  if (!db) return null;
   const invitationsRef = collection(db, "invitations");
   const invitationDoc = doc(invitationsRef);
   await setDoc(invitationDoc, {
@@ -125,6 +126,7 @@ export const createInvitation = async (
 export const getInvitation = async (
   invitationId: string
 ): Promise<Invitation | null> => {
+  if (!db) return null;
   const invitationRef = doc(db, "invitations", invitationId);
   const invitationSnap = await getDoc(invitationRef);
   if (invitationSnap.exists()) {
@@ -142,6 +144,7 @@ export const getInvitation = async (
 export const getInvitationByToken = async (
   token: string
 ): Promise<Invitation | null> => {
+  if (!db) return null;
   const q = query(
     collection(db, "invitations"),
     where("token", "==", token),
@@ -164,6 +167,7 @@ export const getInvitationByToken = async (
 export const getInvitationsByResidential = async (
   residentialId: string
 ): Promise<Invitation[]> => {
+  if (!db) return [];
   const q = query(
     collection(db, "invitations"),
     where("residentialId", "==", residentialId),
@@ -185,6 +189,7 @@ export const updateInvitation = async (
   invitationId: string,
   updates: Partial<Invitation>
 ) => {
+  if (!db) return;
   const invitationRef = doc(db, "invitations", invitationId);
   await updateDoc(invitationRef, updates);
 };
@@ -193,6 +198,7 @@ export const updateInvitation = async (
 export const createQRCode = async (
   qrData: Omit<QRCode, "id" | "createdAt">
 ) => {
+  if (!db) return null;
   const qrCodesRef = collection(db, "qrCodes");
   const qrCodeDoc = doc(qrCodesRef);
   await setDoc(qrCodeDoc, {
@@ -203,6 +209,7 @@ export const createQRCode = async (
 };
 
 export const getQRCode = async (qrCodeId: string): Promise<QRCode | null> => {
+  if (!db) return null;
   const qrCodeRef = doc(db, "qrCodes", qrCodeId);
   const qrCodeSnap = await getDoc(qrCodeRef);
   if (qrCodeSnap.exists()) {
@@ -220,6 +227,7 @@ export const getQRCode = async (qrCodeId: string): Promise<QRCode | null> => {
 export const getQRCodeByData = async (
   qrData: string
 ): Promise<QRCode | null> => {
+  if (!db) return null;
   const q = query(
     collection(db, "qrCodes"),
     where("qrData", "==", qrData),
@@ -318,12 +326,14 @@ export const updateQRCode = async (
   qrCodeId: string,
   updates: Partial<QRCode>
 ) => {
+  if (!db) return;
   const qrCodeRef = doc(db, "qrCodes", qrCodeId);
   await updateDoc(qrCodeRef, updates);
 };
 
 // Delete QR Code
 export const deleteQRCode = async (qrCodeId: string): Promise<void> => {
+  if (!db) return;
   try {
     const qrCodeRef = doc(db, "qrCodes", qrCodeId);
     await deleteDoc(qrCodeRef);
@@ -389,6 +399,7 @@ export const getResidentsByResidential = async (
 
 // Access Log operations
 export const createAccessLog = async (logData: Omit<AccessLog, "id">) => {
+  if (!db) return null;
   const logsRef = collection(db, "accessLogs");
   const logDoc = doc(logsRef);
   await setDoc(logDoc, {

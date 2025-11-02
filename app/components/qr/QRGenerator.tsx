@@ -48,7 +48,6 @@ export default function QRGenerator({ user, onGenerate }: QRGeneratorProps) {
         isActive: true,
         apartment: user.apartment,
         residentName: user.name,
-        createdAt: new Date(),
       });
 
       setQrData(qrDataString);
